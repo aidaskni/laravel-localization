@@ -124,7 +124,7 @@ class Localization
             unset($array_merge['status']);
             unset($array_merge['view']);
             
-            return app('url')->route($routeName, array_merge($this->request->route()->parameters(), $query), true,
+            return app('url')->route($routeName, array_merge($array_merge, $query), true,
                 true);
         } else {
             if ($this->queryLocaleParameter) {
