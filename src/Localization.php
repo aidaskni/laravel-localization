@@ -118,6 +118,12 @@ class Localization
         }
 
         if ($routeName = $this->getLocaleRoute($locale)) {
+            $parameters = $this->request->route()->parameters();
+            $array_merge = array_merge($parameters, $query);
+            
+            unset($array_merge['status']);
+            unset($array_merge['view']);
+            
             return app('url')->route($routeName, array_merge($this->request->route()->parameters(), $query), true,
                 true);
         } else {
