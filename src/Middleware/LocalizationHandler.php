@@ -27,13 +27,13 @@ class LocalizationHandler
 
         $redirect = null;
 
-        if (app('localization')->isValidLocale($locale = $request->get($localQueryParamter))) {
+        
+         if(app('localization')->isLocalizedRoute()) {
 
-            // 1. Priority: Locale via query parameter
+            // 1. Priority: Locale via URL prefix
 
+            $locale = $request->route()->getAction()['localization'];
             $this->setLocale($locale);
-
-            $redirect = $this->localizationRedirect($locale, 301);
 
         } elseif ($enableCookie
             && $request->hasCookie('locale') && app('localization')->isValidLocale($request->cookie('locale'))) {
@@ -45,24 +45,64 @@ class LocalizationHandler
 
             $redirect = $this->localizationRedirect($locale);
 
+        } elseif (app('localization')->isValidLocale($locale = $request->get($localQueryParamter))) {
+
+            // 3. Priority: Locale via query parameter
+
+            $this->setLocale($locale);
+
+            $redirect = $this->localizationRedirect($locale, 301);
+
         } elseif ($enableHttpHeader
             && $request->header('Accept-Language')
             && $locale = $request->getPreferredLanguage(array_keys(app('localization')->getLocales()))) {
 
-            // 3. Priority: Locale via HTTP header
+            // 4. Priority: Locale via HTTP header
 
             $this->setLocale($locale);
 
             $redirect = $this->localizationRedirect($locale);
 
-        } elseif (app('localization')->isLocalizedRoute()) {
+        } 
+        
+        
+//         if (app('localization')->isValidLocale($locale = $request->get($localQueryParamter))) {
 
-            // 4. Priority: Locale via URL prefix
+//             // 1. Priority: Locale via query parameter
 
-            $locale = $request->route()->getAction()['localization'];
-            $this->setLocale($locale);
+//             $this->setLocale($locale);
 
-        }
+//             $redirect = $this->localizationRedirect($locale, 301);
+
+//         } elseif ($enableCookie
+//             && $request->hasCookie('locale') && app('localization')->isValidLocale($request->cookie('locale'))) {
+
+//             // 2. Priority: Locale via cookie
+
+//             $locale = $request->cookie('locale');
+//             $this->setLocale($locale);
+
+//             $redirect = $this->localizationRedirect($locale);
+
+//         } elseif ($enableHttpHeader
+//             && $request->header('Accept-Language')
+//             && $locale = $request->getPreferredLanguage(array_keys(app('localization')->getLocales()))) {
+
+//             // 3. Priority: Locale via HTTP header
+
+//             $this->setLocale($locale);
+
+//             $redirect = $this->localizationRedirect($locale);
+
+//         } 
+//         elseif (app('localization')->isLocalizedRoute()) {
+
+//             // 4. Priority: Locale via URL prefix
+
+//             $locale = $request->route()->getAction()['localization'];
+//             $this->setLocale($locale);
+
+//         }
 
 
         if ($redirect) {
